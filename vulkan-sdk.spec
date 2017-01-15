@@ -4,7 +4,7 @@
 #
 Name     : vulkan-sdk
 Version  : 1.0.37.0
-Release  : 2
+Release  : 3
 URL      : https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers/archive/sdk-1.0.37.0.tar.gz
 Source0  : https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers/archive/sdk-1.0.37.0.tar.gz
 Summary  : No detailed summary available
@@ -83,12 +83,31 @@ Provides: vulkan-sdk-devel
 dev components for the vulkan-sdk package.
 
 
+%package dev32
+Summary: dev32 components for the vulkan-sdk package.
+Group: Default
+Requires: vulkan-sdk-lib32
+Requires: vulkan-sdk-bin
+Requires: vulkan-sdk-dev
+
+%description dev32
+dev32 components for the vulkan-sdk package.
+
+
 %package lib
 Summary: lib components for the vulkan-sdk package.
 Group: Libraries
 
 %description lib
 lib components for the vulkan-sdk package.
+
+
+%package lib32
+Summary: lib32 components for the vulkan-sdk package.
+Group: Default
+
+%description lib32
+lib32 components for the vulkan-sdk package.
 
 
 %prep
@@ -100,7 +119,7 @@ popd
 
 %build
 export LANG=C
-export SOURCE_DATE_EPOCH=1484500879
+export SOURCE_DATE_EPOCH=1484501226
 mkdir clr-build
 pushd clr-build
 cmake .. -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_SHARED_LIBS:BOOL=ON -DLIB_INSTALL_DIR:PATH=%{_libdir} -DCMAKE_AR=/usr/bin/gcc-ar -DLIB_SUFFIX=64 -DCMAKE_RANLIB=/usr/bin/gcc-ranlib -DBUILD_WSI_MIR_SUPPORT=OFF -DBUILD_TESTS=OFF -DBUILD_VKJSON=OFF -DBUILD_LAYERS=OFF
@@ -116,7 +135,7 @@ make VERBOSE=1  %{?_smp_mflags}
 popd
 
 %install
-export SOURCE_DATE_EPOCH=1484500879
+export SOURCE_DATE_EPOCH=1484501226
 rm -rf %{buildroot}
 pushd clr-build32
 %make_install32
@@ -130,6 +149,9 @@ popd
 pushd clr-build
 %make_install
 popd
+## make_install_append content
+mv %{buildroot}/usr/lib %{buildroot}/usr/lib32
+## make_install_append end
 
 %files
 %defattr(-,root,root,-)
@@ -146,12 +168,18 @@ popd
 /usr/include/vulkan/vk_sdk_platform.h
 /usr/include/vulkan/vulkan.h
 /usr/include/vulkan/vulkan.hpp
-/usr/lib/libvulkan.so
 /usr/lib64/libvulkan.so
+
+%files dev32
+%defattr(-,root,root,-)
+/usr/lib32/libvulkan.so
 
 %files lib
 %defattr(-,root,root,-)
-/usr/lib/libvulkan.so.1
-/usr/lib/libvulkan.so.1.0.37
 /usr/lib64/libvulkan.so.1
 /usr/lib64/libvulkan.so.1.0.37
+
+%files lib32
+%defattr(-,root,root,-)
+/usr/lib32/libvulkan.so.1
+/usr/lib32/libvulkan.so.1.0.37
