@@ -1,4 +1,36 @@
 # This file contains additional pkgconfig build requirements that did
 # not get picked up automatically. One name per line, no whitespace.
-OpenCL
 gl
+32gl
+x11
+32x11
+xcb
+32xcb
+xext
+32xext
+xau
+32xau
+xdmcp
+32xdmcp
+xfixes
+32xfixes
+xxf86vm
+32xxf86vm
+32xproto
+32sm
+32ice
+xcursor
+32xcursor
+xrandr
+32xrandr
+xmu
+32xmu
+xcomposite
+32xcomposite
+xft
+32xft
+xinerama
+32xinerama
+xtst
+32xtst
+32xv
