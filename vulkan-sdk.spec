@@ -4,7 +4,7 @@
 #
 Name     : vulkan-sdk
 Version  : 1.0.37.0
-Release  : 3
+Release  : 4
 URL      : https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers/archive/sdk-1.0.37.0.tar.gz
 Source0  : https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers/archive/sdk-1.0.37.0.tar.gz
 Summary  : No detailed summary available
@@ -119,7 +119,7 @@ popd
 
 %build
 export LANG=C
-export SOURCE_DATE_EPOCH=1484501226
+export SOURCE_DATE_EPOCH=1484581464
 mkdir clr-build
 pushd clr-build
 cmake .. -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_SHARED_LIBS:BOOL=ON -DLIB_INSTALL_DIR:PATH=%{_libdir} -DCMAKE_AR=/usr/bin/gcc-ar -DLIB_SUFFIX=64 -DCMAKE_RANLIB=/usr/bin/gcc-ranlib -DBUILD_WSI_MIR_SUPPORT=OFF -DBUILD_TESTS=OFF -DBUILD_VKJSON=OFF -DBUILD_LAYERS=OFF
@@ -135,7 +135,7 @@ make VERBOSE=1  %{?_smp_mflags}
 popd
 
 %install
-export SOURCE_DATE_EPOCH=1484501226
+export SOURCE_DATE_EPOCH=1484581464
 rm -rf %{buildroot}
 pushd clr-build32
 %make_install32
@@ -162,11 +162,11 @@ mv %{buildroot}/usr/lib %{buildroot}/usr/lib32
 
 %files dev
 %defattr(-,root,root,-)
+%exclude /usr/include/vulkan/vk_platform.h
+%exclude /usr/include/vulkan/vulkan.h
 /usr/include/vulkan/vk_icd.h
 /usr/include/vulkan/vk_layer.h
-/usr/include/vulkan/vk_platform.h
 /usr/include/vulkan/vk_sdk_platform.h
-/usr/include/vulkan/vulkan.h
 /usr/include/vulkan/vulkan.hpp
 /usr/lib64/libvulkan.so
 
