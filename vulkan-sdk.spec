@@ -4,7 +4,7 @@
 #
 Name     : vulkan-sdk
 Version  : 1.0.39.0
-Release  : 6
+Release  : 7
 URL      : https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers/archive/sdk-1.0.39.0.tar.gz
 Source0  : https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers/archive/sdk-1.0.39.0.tar.gz
 Summary  : No detailed summary available
