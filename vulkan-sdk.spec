@@ -4,7 +4,7 @@
 #
 Name     : vulkan-sdk
 Version  : 1.0.39.0
-Release  : 9
+Release  : 10
 URL      : https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers/archive/sdk-1.0.39.0.tar.gz
 Source0  : https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers/archive/sdk-1.0.39.0.tar.gz
 Summary  : No detailed summary available
@@ -12,20 +12,32 @@ Group    : Development/Tools
 License  : Apache-2.0 BSD-3-Clause NCSA
 Requires: vulkan-sdk-bin
 Requires: vulkan-sdk-lib
-BuildRequires : cmake
+Requires: vulkan-sdk-license
+BuildRequires : buildreq-cmake
 BuildRequires : gcc-dev32
 BuildRequires : gcc-libgcc32
 BuildRequires : gcc-libstdc++32
+BuildRequires : glibc-dev
 BuildRequires : glibc-dev32
 BuildRequires : glibc-libc32
 BuildRequires : glslang
+BuildRequires : libX11-dev libICE-dev libSM-dev libXau-dev libXcomposite-dev libXcursor-dev libXdamage-dev libXdmcp-dev libXext-dev libXfixes-dev libXft-dev libXi-dev libXinerama-dev libXi-dev libXmu-dev libXpm-dev libXrandr-dev libXrender-dev libXres-dev libXScrnSaver-dev libXt-dev libXtst-dev libXv-dev libXxf86misc-dev libXxf86vm-dev
 BuildRequires : libXScrnSaver-dev
 BuildRequires : libXScrnSaver-dev32
 BuildRequires : mesa-dev
+BuildRequires : pkg-config
 BuildRequires : pkgconfig(32gl)
 BuildRequires : pkgconfig(32ice)
+BuildRequires : pkgconfig(32libudev)
+BuildRequires : pkgconfig(32pciaccess)
+BuildRequires : pkgconfig(32pthread-stubs)
 BuildRequires : pkgconfig(32sm)
+BuildRequires : pkgconfig(32wayland-client)
+BuildRequires : pkgconfig(32wayland-cursor)
+BuildRequires : pkgconfig(32wayland-egl)
+BuildRequires : pkgconfig(32wayland-server)
 BuildRequires : pkgconfig(32x11)
+BuildRequires : pkgconfig(32x11-xcb)
 BuildRequires : pkgconfig(32xau)
 BuildRequires : pkgconfig(32xcb)
 BuildRequires : pkgconfig(32xcomposite)
@@ -42,7 +54,16 @@ BuildRequires : pkgconfig(32xtst)
 BuildRequires : pkgconfig(32xv)
 BuildRequires : pkgconfig(32xxf86vm)
 BuildRequires : pkgconfig(gl)
+BuildRequires : pkgconfig(libudev)
+BuildRequires : pkgconfig(pciaccess)
+BuildRequires : pkgconfig(pthread-stubs)
+BuildRequires : pkgconfig(valgrind)
+BuildRequires : pkgconfig(wayland-client)
+BuildRequires : pkgconfig(wayland-cursor)
+BuildRequires : pkgconfig(wayland-egl)
+BuildRequires : pkgconfig(wayland-server)
 BuildRequires : pkgconfig(x11)
+BuildRequires : pkgconfig(x11-xcb)
 BuildRequires : pkgconfig(xau)
 BuildRequires : pkgconfig(xcb)
 BuildRequires : pkgconfig(xcomposite)
@@ -56,6 +77,7 @@ BuildRequires : pkgconfig(xmu)
 BuildRequires : pkgconfig(xrandr)
 BuildRequires : pkgconfig(xtst)
 BuildRequires : pkgconfig(xxf86vm)
+BuildRequires : python3
 BuildRequires : python3-dev
 Patch1: build.patch
 
@@ -67,6 +89,7 @@ http://code.google.com/p/googletest/
 %package bin
 Summary: bin components for the vulkan-sdk package.
 Group: Binaries
+Requires: vulkan-sdk-license
 
 %description bin
 bin components for the vulkan-sdk package.
@@ -97,6 +120,7 @@ dev32 components for the vulkan-sdk package.
 %package lib
 Summary: lib components for the vulkan-sdk package.
 Group: Libraries
+Requires: vulkan-sdk-license
 
 %description lib
 lib components for the vulkan-sdk package.
@@ -105,9 +129,18 @@ lib components for the vulkan-sdk package.
 %package lib32
 Summary: lib32 components for the vulkan-sdk package.
 Group: Default
+Requires: vulkan-sdk-license
 
 %description lib32
 lib32 components for the vulkan-sdk package.
+
+
+%package license
+Summary: license components for the vulkan-sdk package.
+Group: Default
+
+%description license
+license components for the vulkan-sdk package.
 
 
 %prep
@@ -118,25 +151,33 @@ cp -a Vulkan-LoaderAndValidationLayers-sdk-1.0.39.0 build32
 popd
 
 %build
+export http_proxy=http://127.0.0.1:9/
+export https_proxy=http://127.0.0.1:9/
+export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1485731240
+export SOURCE_DATE_EPOCH=1533934741
 mkdir clr-build
 pushd clr-build
-cmake .. -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_SHARED_LIBS:BOOL=ON -DLIB_INSTALL_DIR:PATH=%{_libdir} -DCMAKE_AR=/usr/bin/gcc-ar -DLIB_SUFFIX=64 -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_RANLIB=/usr/bin/gcc-ranlib -DBUILD_WSI_MIR_SUPPORT=OFF -DBUILD_TESTS=OFF -DBUILD_VKJSON=OFF -DBUILD_LAYERS=OFF
-make VERBOSE=1  %{?_smp_mflags}
+%cmake .. -DBUILD_WSI_MIR_SUPPORT=OFF -DBUILD_TESTS=OFF -DBUILD_VKJSON=OFF -DBUILD_LAYERS=OFF
+make  %{?_smp_mflags}
 popd
 mkdir clr-build32
 pushd clr-build32
 export PKG_CONFIG_PATH="/usr/lib32/pkgconfig"
 export CFLAGS="$CFLAGS -m32"
 export CXXFLAGS="$CXXFLAGS -m32"
-cmake .. -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_SHARED_LIBS:BOOL=ON -DLIB_INSTALL_DIR:PATH=/usr/lib32 -DCMAKE_AR=/usr/bin/gcc-ar -DLIB_SUFFIX=32 -DCMAKE_RANLIB=/usr/bin/gcc-ranlib -DBUILD_WSI_MIR_SUPPORT=OFF -DBUILD_TESTS=OFF -DBUILD_VKJSON=OFF -DBUILD_LAYERS=OFF
-make VERBOSE=1  %{?_smp_mflags}
+%cmake -DLIB_INSTALL_DIR:PATH=/usr/lib32 -DLIB_SUFFIX=32 .. -DBUILD_WSI_MIR_SUPPORT=OFF -DBUILD_TESTS=OFF -DBUILD_VKJSON=OFF -DBUILD_LAYERS=OFF
+make  %{?_smp_mflags}
+unset PKG_CONFIG_PATH
 popd
 
 %install
-export SOURCE_DATE_EPOCH=1485731240
+export SOURCE_DATE_EPOCH=1533934741
 rm -rf %{buildroot}
+mkdir -p %{buildroot}/usr/share/doc/vulkan-sdk
+cp COPYRIGHT.txt %{buildroot}/usr/share/doc/vulkan-sdk/COPYRIGHT.txt
+cp LICENSE.txt %{buildroot}/usr/share/doc/vulkan-sdk/LICENSE.txt
+cp tests/gtest-1.7.0/LICENSE %{buildroot}/usr/share/doc/vulkan-sdk/tests_gtest-1.7.0_LICENSE
 pushd clr-build32
 %make_install32
 if [ -d  %{buildroot}/usr/lib32/pkgconfig ]
@@ -149,9 +190,9 @@ popd
 pushd clr-build
 %make_install
 popd
-## make_install_append content
+## install_append content
 mv %{buildroot}/usr/lib %{buildroot}/usr/lib32
-## make_install_append end
+## install_append end
 
 %files
 %defattr(-,root,root,-)
@@ -162,11 +203,11 @@ mv %{buildroot}/usr/lib %{buildroot}/usr/lib32
 
 %files dev
 %defattr(-,root,root,-)
-%exclude /usr/include/vulkan/vk_platform.h
-%exclude /usr/include/vulkan/vulkan.h
 /usr/include/vulkan/vk_icd.h
 /usr/include/vulkan/vk_layer.h
+/usr/include/vulkan/vk_platform.h
 /usr/include/vulkan/vk_sdk_platform.h
+/usr/include/vulkan/vulkan.h
 /usr/include/vulkan/vulkan.hpp
 /usr/lib64/libvulkan.so
 
@@ -183,3 +224,9 @@ mv %{buildroot}/usr/lib %{buildroot}/usr/lib32
 %defattr(-,root,root,-)
 /usr/lib32/libvulkan.so.1
 /usr/lib32/libvulkan.so.1.0.39
+
+%files license
+%defattr(-,root,root,-)
+/usr/share/doc/vulkan-sdk/COPYRIGHT.txt
+/usr/share/doc/vulkan-sdk/LICENSE.txt
+/usr/share/doc/vulkan-sdk/tests_gtest-1.7.0_LICENSE
